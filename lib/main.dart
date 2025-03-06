@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_first_app/screens/dashboard.dart';
 
 void main() {
   runApp(const MyApp());
@@ -154,6 +155,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                           .save(); // Save the form data
                                       print(
                                           'Name: $_name, Email: $_email, Password: $_password');
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => SecondScreen(
+                                            name: _name,
+                                            email: _email,
+                                            password: _password,
+                                          ),
+                                        ),
+                                      );
                                     }
                                   }
                                 : () {
