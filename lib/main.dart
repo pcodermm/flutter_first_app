@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_first_app/screens/dashboard.dart';
 
+import 'items/card_content.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -11,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -78,46 +80,84 @@ class _MyHomePageState extends State<MyHomePage> {
                     SizedBox(
                       height: 400,
                       width: MediaQuery.of(context).size.width,
-                      child: PageView.builder(
+                      child: PageView(
                         onPageChanged: (value) {
                           setState(() {
                             _page = value;
                           });
                         },
                         controller: _pageController,
-                        itemCount: 3,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              color: Colors.white,
-                              elevation: 8,
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: CardContent(
-                                  page:
-                                      index, // Use index here instead of _page
-                                  formKey: _formKeys[index],
-                                  onNameSaved: (value) {
-                                    setState(() {
-                                      _name = value;
-                                    });
-                                  },
-                                  onEmailSaved: (value) {
-                                    setState(() {
-                                      _email = value;
-                                    });
-                                  },
-                                  onPasswordSaved: (value) {
-                                    setState(() {
-                                      _password = value;
-                                    });
-                                  },
+                        // itemCount: 3,
+                        // itemBuilder: (context, index) {
+                        //   return Padding(
+                        //     padding: const EdgeInsets.all(8.0),
+                        //     child: Card(
+                        //       color: Colors.white,
+                        //       elevation: 8,
+                        //       child: Padding(
+                        //         padding: const EdgeInsets.all(16.0),
+                        //         child: CardContent(
+                        //           page:
+                        //               index, // Use index here instead of _page
+                        //           formKey: _formKeys[index],
+                        //           onNameSaved: (value) {
+                        //             setState(() {
+                        //               _name = value;
+                        //             });
+                        //           },
+                        //           onEmailSaved: (value) {
+                        //             setState(() {
+                        //               _email = value;
+                        //             });
+                        //           },
+                        //           onPasswordSaved: (value) {
+                        //             setState(() {
+                        //               _password = value;
+                        //             });
+                        //           },
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   );
+                        // },
+                        children: [
+                          for (int index = 0; index < 3; index++)
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Card(
+                                color: Colors.white,
+                                elevation: 8,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: CardContent(
+                                    iniV: (index == 0)
+                                        ? _name ?? ''
+                                        : (index == 1)
+                                            ? _email ?? ''
+                                            : _password ?? '',
+                                    page:
+                                        index, // Use index here instead of _page
+                                    formKey: _formKeys[index],
+                                    onNameSaved: (value) {
+                                      setState(() {
+                                        _name = value;
+                                      });
+                                    },
+                                    onEmailSaved: (value) {
+                                      setState(() {
+                                        _email = value;
+                                      });
+                                    },
+                                    onPasswordSaved: (value) {
+                                      setState(() {
+                                        _password = value;
+                                      });
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
-                          );
-                        },
+                        ],
                       ),
                     ),
                     Padding(
@@ -131,8 +171,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                 : () {
                                     _page--; // Move to the previous page
                                     setState(() {
-                                      _pageController.jumpToPage(
-                                          _page); // Update the PageView
+                                      _pageController.animateToPage(
+                                        _page,
+                                        duration:
+                                            const Duration(milliseconds: 300),
+                                        curve: Curves.linear,
+                                      );
+                                      /*_pageController.jumpToPage(
+                                          _page);*/ // Update the PageView
                                     });
                                   },
                             style: ElevatedButton.styleFrom(
@@ -179,7 +225,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                       // Move to the next page
                                       setState(() {
-                                        _pageController.jumpToPage(_page);
+                                        _pageController.animateToPage(
+                                          _page,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          curve: Curves.linear,
+                                        );
                                       });
                                     }
                                   },
@@ -202,194 +253,5 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
-  }
-}
-
-class CardContent extends StatelessWidget {
-  final int page;
-  final GlobalKey<FormState> formKey;
-  final void Function(String?)? onNameSaved;
-  final void Function(String?)? onEmailSaved;
-  final void Function(String?)? onPasswordSaved;
-
-  const CardContent({
-    super.key,
-    required this.page,
-    required this.formKey,
-    this.onNameSaved,
-    this.onEmailSaved,
-    this.onPasswordSaved,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    switch (page) {
-      case 0:
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Step 1',
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 5),
-            Image.asset(
-              'assets/images/id-card.gif',
-              width: 100,
-              height: 100,
-            ),
-            const SizedBox(height: 5),
-            const Text(
-              'Enter your full name below',
-              style: TextStyle(
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Form(
-              key: formKey,
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Name',
-                  labelText: 'Enter your full name here',
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.deepPurpleAccent),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.deepPurpleAccent),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Name is required';
-                  }
-                  return null;
-                },
-                onSaved: onNameSaved,
-              ),
-            ),
-          ],
-        );
-
-      case 1:
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Step 2',
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 5),
-            Image.asset(
-              'assets/images/email-marketing.gif',
-              width: 100,
-              height: 100,
-            ),
-            const SizedBox(height: 5),
-            const Text(
-              'Enter your email address below',
-              style: TextStyle(
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Form(
-              key: formKey,
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Email',
-                  labelText: 'Enter your email address here',
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.deepPurpleAccent),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.deepPurpleAccent),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'email or phone number is required';
-                  } else if (!value.contains('@gmail.com')) {
-                    return 'Invalid email address';
-                  }
-                  return null;
-                },
-                onSaved: onEmailSaved,
-              ),
-            ),
-          ],
-        );
-
-      case 2:
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Step 3',
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 5),
-            Image.asset(
-              'assets/images/two-step-verification.gif',
-              width: 100,
-              height: 100,
-            ),
-            const SizedBox(height: 5),
-            const Text(
-              'Enter your password below',
-              style: TextStyle(
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Form(
-              key: formKey,
-              child: TextFormField(
-                obscureText: true,
-                decoration: const InputDecoration(
-                  hintText: 'Password',
-                  labelText: 'Enter password here',
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.deepPurpleAccent),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.deepPurpleAccent),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'password is required';
-                  } else if (value.length < 8) {
-                    return 'password must be at least 8 characters';
-                  }
-                  return null;
-                },
-                onSaved: onPasswordSaved,
-              ),
-            ),
-          ],
-        );
-
-      default:
-        return const Text('Error: Page not found');
-    }
   }
 }
